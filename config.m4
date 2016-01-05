@@ -13,9 +13,9 @@ dnl [  --with-fastlog             Include fastlog support])
 
 dnl Otherwise use enable:
 
-dnl PHP_ARG_ENABLE(fastlog, whether to enable fastlog support,
+PHP_ARG_ENABLE(fastlog, whether to enable fastlog support,
 dnl Make sure that the comment is aligned:
-dnl [  --enable-fastlog           Enable fastlog support])
+[  --enable-fastlog           Enable fastlog support])
 
 if test "$PHP_FASTLOG" != "no"; then
   dnl Write more examples of tests here...
@@ -45,7 +45,7 @@ if test "$PHP_FASTLOG" != "no"; then
 
   dnl # --with-fastlog -> check for lib and symbol presence
   dnl LIBNAME=fastlog # you may want to change this
-  dnl LIBSYMBOL=fastlog # you most likely want to change this 
+  dnl LIBSYMBOL=fastlog # you most likely want to change this
 
   dnl PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   dnl [
@@ -59,5 +59,5 @@ if test "$PHP_FASTLOG" != "no"; then
   dnl
   dnl PHP_SUBST(FASTLOG_SHARED_LIBADD)
 
-  PHP_NEW_EXTENSION(fastlog, fastlog.c, $ext_shared)
+  PHP_NEW_EXTENSION(fastlog, fastlog.c spin.c, $ext_shared)
 fi

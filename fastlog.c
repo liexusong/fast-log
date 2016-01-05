@@ -26,6 +26,7 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "php_fastlog.h"
+#include "spin.h"
 
 /* If you declare any globals in php_fastlog.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(fastlog)
@@ -282,7 +283,8 @@ fastlog_write_log(int level, char *content, int length)
 		return 0;
 	}
 
-	prefix = sizeof("[1900/00/00 00:00:00] ") + 8; /* 8 is level string example: "debug: " */
+	/* 8 is level string example: "debug: " */
+	prefix = sizeof("[1900/00/00 00:00:00] ") + 8;
 	length = sizeof(*item) + prefix + length + 1;
 
 	item = (fastlog_item_t *)malloc(length);
@@ -464,12 +466,14 @@ PHP_MINIT_FUNCTION(fastlog)
 {
 	zend_class_entry ce;
 
+	spin_init();
+
 	INIT_CLASS_ENTRY(ce, "FastLog", fastlog_methods);
 
 	fastlog_ce = zend_register_internal_class_ex(&ce, NULL, NULL TSRMLS_CC);
 
 	zend_declare_property_null(fastlog_ce,
-		ZEND_STRL(FASTLOG_CLASS_LEVEL_FIELD), ZEND_ACC_PRIVATE TSRMLS_CC);	
+		ZEND_STRL(FASTLOG_CLASS_LEVEL_FIELD), ZEND_ACC_PRIVATE TSRMLS_CC);
 	zend_declare_property_null(fastlog_ce,
 		ZEND_STRL(FASTLOG_CLASS_LOGPATH_FIELD), ZEND_ACC_PRIVATE TSRMLS_CC);
 	zend_declare_property_null(fastlog_ce,
