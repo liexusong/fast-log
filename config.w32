@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("fastlog", "for fastlog support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("fastlog", "enable fastlog support", "no");
+
+if (PHP_FASTLOG != "no") {
+	EXTENSION("fastlog", "fastlog.c");
+}
+
