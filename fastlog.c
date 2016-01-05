@@ -90,6 +90,18 @@ static char *level_prefixs[] = {"debug", "notice", "error"};
 
 
 int
+set_nonblocking(int fd)
+{
+    int flags;
+
+    if ((flags = fcntl(fd, F_GETFL, 0)) < 0 ||
+         fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0)
+        return -1;
+    return 0;
+}
+
+
+int
 get_datetime()
 {
 	time_t ts;
@@ -226,6 +238,9 @@ fastlog_env_init(void)
 		close(manager_ptr->notifiers[1]);
 		return -1;
 	}
+
+	set_nonblocking(manager_ptr->notifiers[0]);
+	set_nonblocking(manager_ptr->notifiers[1]);
 
 	if (pthread_create(&tid, NULL,
 		fastlog_thread_worker, NULL) == -1)
