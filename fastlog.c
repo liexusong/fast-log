@@ -23,6 +23,7 @@
 #endif
 
 #include <fcntl.h>
+#include <pthread.h>
 
 #include "php.h"
 #include "php_ini.h"
@@ -127,7 +128,7 @@ fastlog_update_logfile(void)
 	mon = (datetime >> 8) & (0x000000FF);
 	date = datetime & 0x000000FF;
 
-	sprintf(fullpath, "%s/%s_%4d-%2d-%2d.log",
+	sprintf(fullpath, "%s/%s_%04d-%02d-%02d.log",
 		Z_STRVAL_P(logpath), Z_STRVAL_P(filename), year, mon, date);
 
 	if (manager_ptr->logfd != -1) {
@@ -213,7 +214,7 @@ fastlog_env_init(void)
 
 	manager_ptr->head = NULL;
 	manager_ptr->tail = NULL;
-	manager_ptr->qlock = 1; /* init can lock */
+	manager_ptr->qlock = 0; /* init can lock */
 	manager_ptr->logfd = -1;
 
 	if (pipe(manager_ptr->notifiers) == -1) {
@@ -300,7 +301,7 @@ fastlog_write_log(int level, char *content, int length)
 	tmp = localtime(&ts);
 
 	length = sprintf(item->buffer,
-		"[%4d/%2d/%2d %2d:%2d:%2d] %s: %s\n",
+		"[%04d/%02d/%02d %02d:%02d:%02d] %s: %s\n",
 		tmp->tm_year + 1900, tmp->tm_mon, tmp->tm_mday,
 		tmp->tm_hour, tmp->tm_min, tmp->tm_sec,
 		level_prefixs[level], content);
@@ -509,6 +510,23 @@ PHP_MSHUTDOWN_FUNCTION(fastlog)
 }
 /* }}} */
 
+
+/* Remove if there's nothing to do at request start */
+/* {{{ PHP_RINIT_FUNCTION
+ */
+PHP_RINIT_FUNCTION(fastlog)
+{
+	return SUCCESS;
+}
+/* }}} */
+
+/* Remove if there's nothing to do at request end */
+/* {{{ PHP_RSHUTDOWN_FUNCTION
+ */
+PHP_RSHUTDOWN_FUNCTION(fastlog)
+{
+	return SUCCESS;
+}
 
 /* {{{ PHP_MINFO_FUNCTION
  */

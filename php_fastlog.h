@@ -60,8 +60,6 @@ PHP_RINIT_FUNCTION(fastlog);
 PHP_RSHUTDOWN_FUNCTION(fastlog);
 PHP_MINFO_FUNCTION(fastlog);
 
-PHP_FUNCTION(confirm_fastlog_compiled);	/* For testing, remove later. */
-
 /*
   	Declare any global variables you may need between the BEGIN
 	and END macros here:

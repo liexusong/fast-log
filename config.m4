@@ -7,15 +7,15 @@ dnl without editing.
 
 dnl If your extension references something external, use with:
 
-dnl PHP_ARG_WITH(fastlog, for fastlog support,
+PHP_ARG_WITH(fastlog, for fastlog support,
 dnl Make sure that the comment is aligned:
-dnl [  --with-fastlog             Include fastlog support])
+[  --with-fastlog             Include fastlog support])
 
 dnl Otherwise use enable:
 
-PHP_ARG_ENABLE(fastlog, whether to enable fastlog support,
+dnl PHP_ARG_ENABLE(fastlog, whether to enable fastlog support,
 dnl Make sure that the comment is aligned:
-[  --enable-fastlog           Enable fastlog support])
+dnl [  --enable-fastlog           Enable fastlog support])
 
 if test "$PHP_FASTLOG" != "no"; then
   dnl Write more examples of tests here...
@@ -49,7 +49,7 @@ if test "$PHP_FASTLOG" != "no"; then
 
   dnl PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   dnl [
-  dnl   PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $FASTLOG_DIR/$PHP_LIBDIR, FASTLOG_SHARED_LIBADD)
+PHP_ADD_LIBRARY_WITH_PATH(pthread,, FASTLOG_SHARED_LIBADD)
   dnl   AC_DEFINE(HAVE_FASTLOGLIB,1,[ ])
   dnl ],[
   dnl   AC_MSG_ERROR([wrong fastlog lib version or lib not found])
@@ -57,7 +57,7 @@ if test "$PHP_FASTLOG" != "no"; then
   dnl   -L$FASTLOG_DIR/$PHP_LIBDIR -lm
   dnl ])
   dnl
-  dnl PHP_SUBST(FASTLOG_SHARED_LIBADD)
+PHP_SUBST(FASTLOG_SHARED_LIBADD)
 
   PHP_NEW_EXTENSION(fastlog, fastlog.c spin.c, $ext_shared)
 fi
