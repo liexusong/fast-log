@@ -22,6 +22,8 @@
 #include "config.h"
 #endif
 
+#include <fcntl.h>
+
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
@@ -86,7 +88,7 @@ typedef enum {
 static char *level_prefixs[] = {"debug", "notice", "error"};
 
 
-void
+int
 get_datetime()
 {
 	time_t ts;
@@ -139,7 +141,7 @@ fastlog_update_logfile(void)
 
 
 void *
-fastlog_thread_woker(void *)
+fastlog_thread_worker(void *arg)
 {
 	fd_set read_set;
 	int notify = manager_ptr->notifiers[0];
@@ -193,12 +195,14 @@ do_again:
 				spin_unlock(&manager_ptr->qlock);
 
 				if (item) {
-					write(manager_ptr->logfd, item->buffer, item->size);
+					result = write(manager_ptr->logfd, item->buffer, item->size);
 					free(item);
 				}
 			}
 		}
 	}
+
+	return NULL;
 }
 
 
@@ -223,7 +227,7 @@ fastlog_env_init(void)
 	}
 
 	if (pthread_create(&tid, NULL,
-		fastlog_thread_woker, NULL) == -1)
+		fastlog_thread_worker, NULL) == -1)
 	{
 		close(manager_ptr->notifiers[0]);
 		close(manager_ptr->notifiers[1]);
@@ -262,12 +266,12 @@ int
 fastlog_write_log(int level, char *content, int length)
 {
 	fastlog_item_t *item;
-	zval *instance;
-	int max_level;
+	zval *instance, *max_level;
 	int prefix;
 
 	time_t ts;
 	struct tm *tmp;
+	int result;
 
 	if (level < FASTLOG_DEUBG_LEVEL
 		|| level > FASTLOG_ERROR_LEVEL)
@@ -279,7 +283,7 @@ fastlog_write_log(int level, char *content, int length)
 
 	max_level = zend_read_property(fastlog_ce,
 		instance, ZEND_STRL(FASTLOG_CLASS_LEVEL_FIELD), 0 TSRMLS_CC);
-	if (level < max_level) {
+	if (Z_LVAL_P(max_level) > level) {
 		return 0;
 	}
 
@@ -320,7 +324,8 @@ fastlog_write_log(int level, char *content, int length)
 
 	spin_unlock(&manager_ptr->qlock);
 
-	write(manager_ptr->notifiers[1], "\0", 1); /* notify worker thread */
+	/* notify worker thread */
+	result = write(manager_ptr->notifiers[1], "\0", 1);
 
 	return 0;
 }

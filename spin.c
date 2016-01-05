@@ -17,6 +17,7 @@
 */
 
 #include <stdlib.h>
+#include <unistd.h>
 #include "spin.h"
 
 static int __cpus = 1;

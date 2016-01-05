@@ -88,14 +88,14 @@ ZEND_END_MODULE_GLOBALS(fastlog)
 #define FASTLOG_G(v) (fastlog_globals.v)
 #endif
 
-extern zend_class_entry *fastlog_ce;
-
 PHP_METHOD(FastLog, __construct);
 PHP_METHOD(FastLog, getInstance);
 PHP_METHOD(FastLog, init);
 PHP_METHOD(FastLog, debug);
 PHP_METHOD(FastLog, notice);
 PHP_METHOD(FastLog, error);
+
+zval *get_instance(void);
 
 #endif	/* PHP_FASTLOG_H */
 
